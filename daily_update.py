@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""画画工作台 · 每日内容生成器
+"""美术台 · 每日内容生成器
 GitHub Actions 每天北京时间 07:30 运行：
   1. 按日期轮换生成「每日一练」画题
   2. 写入 daily.js（window.DAILY_DATA）
@@ -40,7 +40,7 @@ def build():
         "updateTs": int(time.time()),
         "prompt": PROMPTS[day_index() % len(PROMPTS)],
     }
-    js = "/* 画画工作台 · 每日数据（由 daily_update.py 生成，勿手改） */\n"
+    js = "/* 美术台 · 每日数据（由 daily_update.py 生成，勿手改） */\n"
     js += "window.DAILY_DATA = " + json.dumps(data, ensure_ascii=False) + ";\n"
     with open("daily.js", "w", encoding="utf-8") as f:
         f.write(js)

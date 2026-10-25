@@ -1,4 +1,4 @@
-/* 画画工作台 - Service Worker（离线缓存）
+/* 美术台 - Service Worker（离线缓存）
    版本 art-v2：新增 daily.js 每日数据 + nocache 强制更新通道 */
 const CACHE = 'art-v3';
 const ASSETS = [
