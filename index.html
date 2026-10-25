@@ -888,6 +888,32 @@ function renderTime(){
 
 /* ================= 每日内容（daily.js，点「更新」才拉新版） ================= */
 function daily(){ return window.DAILY_DATA || null; }
+/* 远端镜像竞速：GitHub Actions 每天更新仓库里的 daily.js，页面并发拉取取 updateTs 最新者 */
+const REMOTE_SOURCES = [
+  'https://gh-proxy.com/https://raw.githubusercontent.com/CP809/art-workbench/main/daily.js',
+  'https://ghfast.top/https://raw.githubusercontent.com/CP809/art-workbench/main/daily.js',
+  'https://gh.idayer.com/https://raw.githubusercontent.com/CP809/art-workbench/main/daily.js',
+  'https://ghproxy.net/https://raw.githubusercontent.com/CP809/art-workbench/main/daily.js',
+  'https://raw.githubusercontent.com/CP809/art-workbench/main/daily.js'
+];
+function fetchRemoteDaily(){
+  const cur = (window.DAILY_DATA && window.DAILY_DATA.updateTs) || 0;
+  REMOTE_SOURCES.forEach(src => {
+    fetch(src, {cache:'no-store'})
+      .then(r => r.ok ? r.text() : Promise.reject())
+      .then(txt => {
+        const m = txt.match(/window\.DAILY_DATA\s*=\s*(\{[\s\S]*\})\s*;/);
+        if(!m) return;
+        const data = JSON.parse(m[1]);
+        if(data.updateTs > ((window.DAILY_DATA || {}).updateTs || 0)){
+          window.DAILY_DATA = data;
+          renderPrompt(); updateDataTimeTxt();
+          toast('✅ 已同步每日内容 ' + data.date);
+        }
+      })
+      .catch(()=>{});
+  });
+}
 function renderPrompt(){
   const D = daily();
   const box = document.getElementById('promptBox');
@@ -1029,6 +1055,7 @@ document.querySelectorAll('.nav-item').forEach(n=>{
   renderPrompt();
   renderWord();
   updateDataTimeTxt();
+  fetchRemoteDaily();
   renderSketch();
   renderTime();
 
