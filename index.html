@@ -219,24 +219,11 @@ textarea:focus{border-color:var(--vio-500);box-shadow:0 0 0 3px var(--vio-50)}
 .btn-primary{background:var(--vio-600);border-color:var(--vio-600);color:#fff}
 .btn-primary:hover{background:var(--vio-700);color:#fff}
 
-/* ---------- 单词记忆 ---------- */
+/* ---------- 单词打卡 ---------- */
 .prompt-tag{font-size:10.5px;padding:2px 8px;border-radius:6px;font-weight:700;background:var(--vio-100);color:var(--vio-700);flex-shrink:0;margin-top:2px}
 .prompt-title{font-size:14.5px;font-weight:700;line-height:1.5}
 .prompt-detail{font-size:12.5px;color:var(--ink-2);margin-top:5px;line-height:1.65}
-.word-item{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:9px;background:#fff;transition:.16s}
-.word-item.known{border-color:#86efac;background:#f0fdf4}
-.w-head{display:flex;align-items:baseline;gap:8px}
-.w-word{font-size:16.5px;font-weight:700;letter-spacing:.2px}
-.word-item.known .w-word{color:#15803d}
-.w-pos{font-size:11.5px;color:var(--ink-3)}
-.w-idx{margin-left:auto;font-size:11px;color:var(--ink-3)}
-.w-mean{margin-top:6px;font-size:13.5px;color:var(--ink-2);cursor:pointer;transition:filter .22s;line-height:1.6}
-.w-mean.blurred{filter:blur(7px);user-select:none}
-.w-actions{display:flex;gap:8px;margin-top:10px}
-.w-btn{flex:1;border:1px solid var(--line);background:#fff;border-radius:8px;padding:8px;font-size:12.5px;cursor:pointer;transition:.16s;font-family:inherit;color:var(--ink-2)}
-.w-btn:hover{border-color:var(--vio-400);color:var(--vio-600)}
-.w-btn.ok-on{background:#10b981;border-color:#10b981;color:#fff;font-weight:600}
-.w-btn.again-on{background:#f1f5f9;border-color:#cbd5e1;color:var(--ink-2);font-weight:600}
+.tl .v.word{color:#10b981}
 
 /* ---------- toast ---------- */
 .toast{
@@ -315,7 +302,7 @@ textarea:focus{border-color:var(--vio-500);box-shadow:0 0 0 3px var(--vio-50)}
 
     <div class="nav-label">打卡</div>
     <div class="nav-item" data-view="word">
-      <span class="ico">📖</span><span class="txt">单词记忆</span><span class="badge" id="wordBadge">0/30</span>
+      <span class="ico">📖</span><span class="txt">单词打卡</span><span class="badge" id="wordBadge">0/30</span>
     </div>
     <div class="nav-item" data-view="sketch">
       <span class="ico">✍️</span><span class="txt">速写打卡</span><span class="badge" id="sketchBadge">0/5</span>
@@ -421,30 +408,36 @@ textarea:focus{border-color:var(--vio-500);box-shadow:0 0 0 3px var(--vio-50)}
         <div class="news-list" id="tasteList"></div>
       </section>
 
-      <!-- 单词记忆 -->
+      <!-- 单词打卡 -->
       <section class="view" id="view-word">
         <div class="checkin-wrap">
           <div class="card hero-card">
             <div class="ring" id="wordRing" style="--pct:0%;--ring-c:#10b981">
               <div class="ring-inner">
                 <div class="ring-num num" id="wordNum">0</div>
-                <div class="ring-unit">今日 / 30 词</div>
+                <div class="ring-unit">今日 / 30 个</div>
               </div>
             </div>
+            <div class="input-row">
+              <input type="number" id="wordInput" placeholder="自定义个数" min="1" max="999" inputmode="numeric">
+              <button class="btn btn-primary" onclick="addWordInput()">记完了</button>
+            </div>
             <div class="quick-row">
-              <button class="quick-chip" id="btnHideMean" onclick="toggleHideMean()">🙈 遮住全部释义</button>
-              <button class="quick-chip" onclick="resetWords()">↺ 重置今日</button>
+              <button class="quick-chip" onclick="addWord(5)">+5</button>
+              <button class="quick-chip" onclick="addWord(10)">+10</button>
+              <button class="quick-chip" onclick="addWord(20)">+20</button>
+              <button class="quick-chip" onclick="addWord(30)">完成 30 个</button>
             </div>
             <div class="streak-box">
               <span class="lbl">连续达标</span>
               <span class="val"><span class="num" id="wordStreak">0</span> <small>天</small></span>
             </div>
             <div class="status-line" id="wordStatus"></div>
+            <button class="quick-chip" style="margin-top:12px" onclick="undoWord()">↩ 撤销上一次</button>
           </div>
           <div class="card">
-            <div class="card-title">📖 今日单词 <span class="done-badge" id="wordDone" style="display:none">今日达标 ✓</span></div>
-            <ul class="tl" style="margin-bottom:12px" id="wordSummary"></ul>
-            <div id="wordList"></div>
+            <div class="card-title">📖 今日背词记录 <span class="done-badge" id="wordDone" style="display:none">今日达标 ✓</span></div>
+            <ul class="tl" id="wordTimeline"></ul>
             <div class="quote" id="wordQuote"></div>
           </div>
         </div>
@@ -918,7 +911,7 @@ function manualUpdate(){
     .then(r => { if(!r.ok) throw new Error(r.status); return r.text(); })
     .then(txt => {
       new Function(txt)();          // 重新执行 daily.js，覆盖 window.DAILY_DATA
-      renderPrompt(); renderWords(); updateDataTimeTxt();
+      renderPrompt(); updateDataTimeTxt();
       const D = daily();
       toast('✅ 已更新至 ' + (D ? D.date : '最新') + '（' + (D && D.words ? D.words.length : 0) + ' 个单词）');
     })
@@ -926,29 +919,37 @@ function manualUpdate(){
     .finally(() => { btn.textContent = '🔄 更新'; btn.disabled = false; });
 }
 
-/* ================= 单词记忆 ================= */
-const WORD_GOAL = () => (daily() && daily().words ? daily().words.length : 30);
-const wordMarksKey = () => 'art_word_marks_' + ((daily() && daily().date) || todayKey());
+/* ================= 单词打卡 ================= */
+const WORD_GOAL = 30;
+const wordKey = () => 'art_word_' + todayKey();
 const WORD_DONE_KEY2 = 'art_word_done';
-let hideMean = false;
-function getMarks(){
-  try{ return JSON.parse(localStorage.getItem(wordMarksKey())) || {}; }
-  catch(e){ return {}; }
+function getWord(){
+  try{ return JSON.parse(localStorage.getItem(wordKey())) || {count:0, records:[]}; }
+  catch(e){ return {count:0, records:[]}; }
 }
-function setMarks(m){ localStorage.setItem(wordMarksKey(), JSON.stringify(m)); }
-function toggleHideMean(){
-  hideMean = !hideMean;
-  document.getElementById('btnHideMean').textContent = hideMean ? '👁 显示全部释义' : '🙈 遮住全部释义';
-  renderWords();
+function setWord(d){ localStorage.setItem(wordKey(), JSON.stringify(d)); }
+function addWord(n){
+  if(!(n > 0)) return;
+  const d = getWord();
+  d.count += n;
+  d.records.push({time:Date.now(), n:n});
+  setWord(d); renderWord();
+  toast('📖 已记 ' + n + ' 个单词，今日共 ' + d.count + ' 个');
 }
-function markWord(w, known){
-  const m = getMarks();
-  if(known) m[w] = true; else delete m[w];
-  setMarks(m); renderWords();
+function addWordInput(){
+  const el = document.getElementById('wordInput');
+  const n = parseInt(el.value, 10);
+  if(!(n > 0)){ toast('请输入大于 0 的数字'); return; }
+  addWord(n);
+  el.value = '';
 }
-function resetWords(){
-  setMarks({}); renderWords();
-  toast('↺ 已重置今日单词进度');
+function undoWord(){
+  const d = getWord();
+  if(!d.records.length){ toast('今天还没有记录'); return; }
+  const last = d.records.pop();
+  d.count = Math.max(0, d.count - last.n);
+  setWord(d); renderWord();
+  toast('↩ 已撤销 ' + last.n + ' 个');
 }
 function wordStreakDays(){
   const done = JSON.parse(localStorage.getItem(WORD_DONE_KEY2) || '{}');
@@ -958,50 +959,30 @@ function wordStreakDays(){
   while(done[fmtDate(d)]){ streak++; d.setDate(d.getDate() - 1); }
   return streak;
 }
-function renderWords(){
-  const D = daily();
-  const listEl = document.getElementById('wordList');
-  if(!D || !D.words || !D.words.length){
-    listEl.innerHTML = '<div class="empty" style="padding:14px 0">暂无今日单词，点「更新」拉取</div>';
-    document.getElementById('wordBadge').textContent = '0/30';
-    return;
-  }
-  const marks = getMarks();
-  const total = D.words.length;
-  const knownN = D.words.filter(x => marks[x.w]).length;
-  document.getElementById('wordNum').textContent = knownN;
-  document.getElementById('wordRing').style.setProperty('--pct', Math.min(100, knownN/total*100) + '%');
-  document.getElementById('wordBadge').textContent = knownN + '/' + total;
-  const allDone = knownN >= total;
-  document.getElementById('wordDone').style.display = allDone ? '' : 'none';
-  document.getElementById('wordStatus').innerHTML = allDone
-    ? '<b>今日 30 词全部拿下 ✓</b> 明天见'
-    : '点单词卡可显示释义，还差 <b>' + (total - knownN) + '</b> 个没记住';
+function renderWord(){
+  const d = getWord();
+  document.getElementById('wordNum').textContent = d.count;
+  document.getElementById('wordRing').style.setProperty('--pct', Math.min(100, d.count/WORD_GOAL*100) + '%');
+  document.getElementById('wordBadge').textContent = d.count + '/' + WORD_GOAL;
+  const done = d.count >= WORD_GOAL;
+  document.getElementById('wordDone').style.display = done ? '' : 'none';
+  document.getElementById('wordStatus').innerHTML = done
+    ? '<b>今日 30 个已达标 ✓</b> 明天见'
+    : '今日还差 <b>' + (WORD_GOAL - d.count) + '</b> 个单词';
   const dm = JSON.parse(localStorage.getItem(WORD_DONE_KEY2) || '{}');
-  if(allDone && !dm[fmtDate(new Date())]){
+  if(done && !dm[fmtDate(new Date())]){
     dm[fmtDate(new Date())] = true;
     localStorage.setItem(WORD_DONE_KEY2, JSON.stringify(dm));
   }
   document.getElementById('wordStreak').textContent = wordStreakDays();
-  const dayIdx = Math.floor((new Date(D.date + 'T00:00:00') - new Date('2026-01-01T00:00:00')) / 86400000);
-  const groupNo = (dayIdx % 7) + 1;
-  document.getElementById('wordSummary').innerHTML =
-    '<li><span class="t">词库</span><span>四级高频 · 今日第 ' + groupNo + ' 组</span>' +
-    '<span class="v word">共 ' + (D.wordsTotal || 210) + ' 词</span></li>' +
-    '<li><span class="t">进度</span><span>已认识 ' + knownN + ' / ' + total + '</span>' +
-    '<span class="v word">' + Math.round(knownN/total*100) + '%</span></li>';
-  listEl.innerHTML = D.words.map((x, i) => {
-    const known = !!marks[x.w];
-    return '<div class="word-item' + (known ? ' known' : '') + '">' +
-      '<div class="w-head"><span class="w-word">' + esc(x.w) + '</span>' +
-      '<span class="w-pos">' + esc(x.pos) + '</span>' +
-      '<span class="w-idx num">' + (i + 1) + '/' + total + '</span></div>' +
-      '<div class="w-mean' + (hideMean ? ' blurred' : '') + '" onclick="this.classList.toggle(\'blurred\')">' + esc(x.mean) + '</div>' +
-      '<div class="w-actions">' +
-        '<button class="w-btn' + (known ? ' ok-on' : '') + '" onclick="markWord(\'' + esc(x.w) + '\',' + (known ? 'false' : 'true') + ')">' + (known ? '✓ 已记住' : '✓ 记住了') + '</button>' +
-        '<button class="w-btn' + (known ? '' : ' again-on') + '" onclick="markWord(\'' + esc(x.w) + '\',false)">↻ 再看看</button>' +
-      '</div></div>';
-  }).join('');
+  const tl = document.getElementById('wordTimeline');
+  tl.innerHTML = d.records.length
+    ? [...d.records].reverse().map(r=>{
+        const t = new Date(r.time);
+        return '<li><span class="t num">' + pad(t.getHours()) + ':' + pad(t.getMinutes()) +
+               '</span><span>背单词</span><span class="v word">+' + r.n + ' 个</span></li>';
+      }).join('')
+    : '<li><span class="t">—</span><span style="color:#9b94ad">今天还没开始背</span></li>';
   const doy = Math.floor((Date.now() - new Date(new Date().getFullYear(),0,0).getTime())/86400000);
   const q = QUOTES[(doy + 3) % QUOTES.length];
   document.getElementById('wordQuote').innerHTML =
@@ -1011,7 +992,7 @@ function renderWords(){
 /* ================= 导航 ================= */
 const VIEW_TITLES = {
   plan:'日程安排', base:'基础训练', special:'专项突破', color:'色彩练习',
-  comp:'构图与角色', taste:'审美提升', word:'单词记忆', sketch:'速写打卡', time:'时长打卡'
+  comp:'构图与角色', taste:'审美提升', word:'单词打卡', sketch:'速写打卡', time:'时长打卡'
 };
 function switchView(v){
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active', n.dataset.view === v));
@@ -1046,7 +1027,7 @@ window.addEventListener('beforeinstallprompt', (e)=>{ e.preventDefault(); });
   bindReview();
   renderAllNews();
   renderPrompt();
-  renderWords();
+  renderWord();
   updateDataTimeTxt();
   renderSketch();
   renderTime();
