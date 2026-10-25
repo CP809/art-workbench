@@ -225,6 +225,17 @@ textarea:focus{border-color:var(--vio-500);box-shadow:0 0 0 3px var(--vio-50)}
 .prompt-detail{font-size:12.5px;color:var(--ink-2);margin-top:5px;line-height:1.65}
 .tl .v.word{color:#10b981}
 
+/* ---------- 安装到桌面 ---------- */
+.install-fab{
+  position:fixed;right:14px;bottom:calc(72px + env(safe-area-inset-bottom,0px));z-index:50;
+  display:none;align-items:center;gap:6px;
+  background:linear-gradient(135deg,var(--vio-500),var(--vio-700));color:#fff;
+  border:none;border-radius:22px;padding:10px 16px;font-size:13.5px;font-weight:700;
+  font-family:inherit;cursor:pointer;box-shadow:0 6px 20px rgba(124,58,237,.4);
+}
+.install-fab:active{transform:scale(.97)}
+@media(min-width:769px){.install-fab{right:20px;bottom:24px}}
+
 /* ---------- toast ---------- */
 .toast{
   position:fixed;left:50%;bottom:calc(76px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);
@@ -512,6 +523,7 @@ textarea:focus{border-color:var(--vio-500);box-shadow:0 0 0 3px var(--vio-50)}
 </div>
 
 <div class="toast" id="toast"></div>
+<button class="install-fab" id="installBtn" onclick="doInstall()">📲 安装到桌面</button>
 
 <script src="daily.js"></script>
 <script src="data.js"></script>
@@ -519,6 +531,14 @@ textarea:focus{border-color:var(--vio-500);box-shadow:0 0 0 3px var(--vio-50)}
 /* ================= 工具 ================= */
 function esc(s){return (s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function todayKey(){return new Date().toDateString()}
+function doInstall(){
+  if(!window.__installEvent){
+    toast('请点浏览器右上角 ⋮ →「添加到主屏幕 / 安装应用」');
+    return;
+  }
+  window.__installEvent.prompt();
+  window.__installEvent.userChoice.then(()=>{ window.__installEvent = null; });
+}
 function pad(n){return String(n).padStart(2,'0')}
 function fmtDate(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
 function toast(msg){
@@ -1062,6 +1082,22 @@ document.querySelectorAll('.nav-item').forEach(n=>{
   if('serviceWorker' in navigator){
     navigator.serviceWorker.register('service-worker.js').catch(()=>{});
   }
+  /* 安装到桌面按钮 */
+  let installEvent = null;
+  window.addEventListener('beforeinstallprompt', (e)=>{
+    e.preventDefault();
+    installEvent = e;
+    window.__installEvent = e;
+    const b = document.getElementById('installBtn');
+    if(b) b.style.display = 'flex';
+  });
+  window.addEventListener('appinstalled', ()=>{
+    installEvent = null;
+    window.__installEvent = null;
+    const b = document.getElementById('installBtn');
+    if(b) b.style.display = 'none';
+    toast('✅ 已安装，去桌面找「美术台」吧');
+  });
   try{
     const v = localStorage.getItem('art_last_view');
     if(v && VIEW_TITLES[v]) switchView(v);
