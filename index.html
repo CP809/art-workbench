@@ -228,13 +228,28 @@ textarea:focus{border-color:var(--vio-500);box-shadow:0 0 0 3px var(--vio-50)}
 /* ---------- 安装到桌面 ---------- */
 .install-fab{
   position:fixed;right:14px;bottom:calc(72px + env(safe-area-inset-bottom,0px));z-index:50;
-  display:none;align-items:center;gap:6px;
+  display:flex;align-items:center;gap:6px;
   background:linear-gradient(135deg,var(--vio-500),var(--vio-700));color:#fff;
   border:none;border-radius:22px;padding:10px 16px;font-size:13.5px;font-weight:700;
   font-family:inherit;cursor:pointer;box-shadow:0 6px 20px rgba(124,58,237,.4);
 }
 .install-fab:active{transform:scale(.97)}
 @media(min-width:769px){.install-fab{right:20px;bottom:24px}}
+.ig-mask{position:fixed;inset:0;background:rgba(30,27,46,.55);z-index:100;display:none}
+.ig-mask.on{display:flex;align-items:flex-end;justify-content:center}
+@media(min-width:769px){.ig-mask.on{align-items:center}}
+.ig-card{background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:430px;padding:22px 20px calc(24px + env(safe-area-inset-bottom,0px));animation:igUp .25s ease}
+@media(min-width:769px){.ig-card{border-radius:20px;padding-bottom:24px}}
+@keyframes igUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
+.ig-title{font-size:16.5px;font-weight:800;margin-bottom:4px}
+.ig-sub{font-size:12.5px;color:var(--ink-3);margin-bottom:14px}
+.ig-step{display:flex;gap:10px;margin-bottom:12px}
+.ig-n{width:22px;height:22px;border-radius:50%;background:var(--vio-100);color:var(--vio-700);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.ig-t{font-size:13.5px;line-height:1.65;color:var(--ink)}
+.ig-t b{color:var(--vio-600)}
+.ig-btn{width:100%;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;margin-top:6px}
+.ig-btn.primary{background:linear-gradient(135deg,var(--vio-500),var(--vio-700));color:#fff}
+.ig-btn.ghost{background:#f4f2fb;color:var(--ink-2);margin-top:8px}
 
 /* ---------- toast ---------- */
 .toast{
@@ -524,6 +539,16 @@ textarea:focus{border-color:var(--vio-500);box-shadow:0 0 0 3px var(--vio-50)}
 
 <div class="toast" id="toast"></div>
 <button class="install-fab" id="installBtn" onclick="doInstall()">📲 安装到桌面</button>
+<div class="ig-mask" id="igMask" onclick="if(event.target===this)closeInstallGuide()">
+  <div class="ig-card">
+    <div class="ig-title">📲 把「美术台」装到桌面</div>
+    <div class="ig-sub">两种方法，选一种照做就行（约 30 秒）</div>
+    <div class="ig-step"><span class="ig-n">1</span><span class="ig-t"><b>推荐 · 100% 成功</b><br>复制链接，用手机<b>自带的浏览器</b>打开本页 → 点菜单（☰ 或 ⋮）→「<b>添加到桌面</b>」→ 确认。桌面立刻出现图标。</span></div>
+    <div class="ig-step"><span class="ig-n">2</span><span class="ig-t"><b>Chrome 方式</b><br>点下面「一键安装」。若一直显示"正在安装"，是因为打包需连 Google（国内不通），请改用方法 1。</span></div>
+    <button class="ig-btn primary" id="igInstallBtn" onclick="nativeInstall()">⚡ 一键安装（Chrome）</button>
+    <button class="ig-btn ghost" onclick="closeInstallGuide()">我知道了</button>
+  </div>
+</div>
 
 <script src="daily.js"></script>
 <script src="data.js"></script>
@@ -532,12 +557,26 @@ textarea:focus{border-color:var(--vio-500);box-shadow:0 0 0 3px var(--vio-50)}
 function esc(s){return (s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function todayKey(){return new Date().toDateString()}
 function doInstall(){
+  const mask = document.getElementById('igMask');
+  if(window.__installEvent){
+    nativeInstall();
+    return;
+  }
+  mask.classList.add('on');
+}
+function nativeInstall(){
   if(!window.__installEvent){
-    toast('请点浏览器右上角 ⋮ →「添加到主屏幕 / 安装应用」');
+    toast('当前浏览器不支持一键安装，请按方法 1 操作');
     return;
   }
   window.__installEvent.prompt();
-  window.__installEvent.userChoice.then(()=>{ window.__installEvent = null; });
+  window.__installEvent.userChoice.then(()=>{
+    window.__installEvent = null;
+    closeInstallGuide();
+  });
+}
+function closeInstallGuide(){
+  document.getElementById('igMask').classList.remove('on');
 }
 function pad(n){return String(n).padStart(2,'0')}
 function fmtDate(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
