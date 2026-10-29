@@ -1,2 +1,2 @@
 /* 美术台 · 每日数据（由 daily_update.py 生成，勿手改） */
-window.DAILY_DATA = {"date": "2026-10-29", "updateTime": "2026-10-29 08:11", "updateTs": 1793232663, "prompt": {"tag": "光影素描", "title": "一个白瓷杯的五大调子", "detail": "重点找明暗交界线，反光不许超过灰面，画完眯眼检查暗部是否统一。"}};
+window.DAILY_DATA = {"date": "2026-10-30", "updateTime": "2026-10-30 07:56", "updateTs": 1793318184, "prompt": {"tag": "头发分组", "title": "3 组不同发型的分组示意", "detail": "先画头球体，再罩 5~7 个大组，用 Z 字形穿插表现前后遮挡。"}};
