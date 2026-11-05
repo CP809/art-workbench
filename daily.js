@@ -1,2 +1,2 @@
 /* 美术台 · 每日数据（由 daily_update.py 生成，勿手改） */
-window.DAILY_DATA = {"date": "2026-11-05", "updateTime": "2026-11-05 08:20", "updateTs": 1793838023, "prompt": {"tag": "角色设计", "title": "纯黑剪影设计一个角色", "detail": "涂黑后还能认出职业和性格才算成立，夸张一个标志性特征就够。"}};
+window.DAILY_DATA = {"date": "2026-11-06", "updateTime": "2026-11-06 07:59", "updateTs": 1793923198, "prompt": {"tag": "氛围感", "title": "给旧图加光斑和环境色", "detail": "逆光处加浮尘光斑、暗部加环境色反光、受光面带光源色，前后对比存档。"}};
