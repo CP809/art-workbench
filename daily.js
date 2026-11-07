@@ -1,2 +1,2 @@
 /* 美术台 · 每日数据（由 daily_update.py 生成，勿手改） */
-window.DAILY_DATA = {"date": "2026-11-06", "updateTime": "2026-11-06 08:18", "updateTs": 1793924309, "prompt": {"tag": "氛围感", "title": "给旧图加光斑和环境色", "detail": "逆光处加浮尘光斑、暗部加环境色反光、受光面带光源色，前后对比存档。"}};
+window.DAILY_DATA = {"date": "2026-11-07", "updateTime": "2026-11-07 10:56", "updateTs": 1794020213, "prompt": {"tag": "审美提升", "title": "看 10 张图，各写一句好在哪", "detail": "问三个问题：视线先落在哪、为什么被吸引、用了什么对比。"}};
