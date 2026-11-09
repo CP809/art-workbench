@@ -1,2 +1,2 @@
 /* 美术台 · 每日数据（由 daily_update.py 生成，勿手改） */
-window.DAILY_DATA = {"date": "2026-11-08", "updateTime": "2026-11-08 10:41", "updateTs": 1794105719, "prompt": {"tag": "速写练习", "title": "课间 / 通勤随手速写 3 张", "detail": "画身边的人和物，每张不超过 3 分钟，练观察不练完成度。"}};
+window.DAILY_DATA = {"date": "2026-11-09", "updateTime": "2026-11-09 10:46", "updateTs": 1794192364, "prompt": {"tag": "动态速写", "title": "30 秒 × 10 张，只画动态线", "detail": "不看细节，一笔概括人物运动趋势，画完挑出最有动感的一张。"}};
