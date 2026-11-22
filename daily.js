@@ -1,2 +1,2 @@
 /* 美术台 · 每日数据（由 daily_update.py 生成，勿手改） */
-window.DAILY_DATA = {"date": "2026-11-21", "updateTime": "2026-11-21 12:15", "updateTs": 1795234558, "prompt": {"tag": "动态速写", "title": "30 秒 × 10 张，只画动态线", "detail": "不看细节，一笔概括人物运动趋势，画完挑出最有动感的一张。"}};
+window.DAILY_DATA = {"date": "2026-11-22", "updateTime": "2026-11-22 11:17", "updateTs": 1795317453, "prompt": {"tag": "光影素描", "title": "一个白瓷杯的五大调子", "detail": "重点找明暗交界线，反光不许超过灰面，画完眯眼检查暗部是否统一。"}};
