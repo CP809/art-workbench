@@ -1,2 +1,2 @@
 /* 美术台 · 每日数据（由 daily_update.py 生成，勿手改） */
-window.DAILY_DATA = {"date": "2026-11-24", "updateTime": "2026-11-24 14:59", "updateTs": 1795503549, "prompt": {"tag": "布料褶皱", "title": "搭在椅背上的外套", "detail": "先标出受力点和支撑点，再画 3 组大褶皱 + 2 组小褶皱，其余省略。"}};
+window.DAILY_DATA = {"date": "2026-11-24", "updateTime": "2026-11-24 15:05", "updateTs": 1795503940, "prompt": {"tag": "布料褶皱", "title": "搭在椅背上的外套", "detail": "先标出受力点和支撑点，再画 3 组大褶皱 + 2 组小褶皱，其余省略。"}};
