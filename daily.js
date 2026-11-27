@@ -1,2 +1,2 @@
 /* 美术台 · 每日数据（由 daily_update.py 生成，勿手改） */
-window.DAILY_DATA = {"date": "2026-11-27", "updateTime": "2026-11-27 13:11", "updateTs": 1795756291, "prompt": {"tag": "色彩练习", "title": "逆光小场景 15 分钟", "detail": "主体压暗、边缘留一条亮边光、背景提亮，只靠明度差把形立起来。"}};
+window.DAILY_DATA = {"date": "2026-11-27", "updateTime": "2026-11-27 13:20", "updateTs": 1795756828, "prompt": {"tag": "色彩练习", "title": "逆光小场景 15 分钟", "detail": "主体压暗、边缘留一条亮边光、背景提亮，只靠明度差把形立起来。"}};
